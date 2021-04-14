@@ -5,3 +5,6 @@ compile:
 
 link:
 	g++ main.o -o main -L src/lib -l sfml-graphics -l sfml-window -l sfml-system
+
+clean:
+	rm -f *.o *.exe

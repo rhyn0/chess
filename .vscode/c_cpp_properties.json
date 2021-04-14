@@ -2,11 +2,7 @@
     "configurations": [
         {
             "name": "Win32",
-            "intelliSenseMode": "gcc-x86",
-            "compilerPath": "C:/MinGW/bin/g++.exe",
             "includePath": [
-                "${workspaceFolder}/src",
-                "${workspaceFolder}/src/include",
                 "${workspaceFolder}/**"
             ],
             "defines": [
@@ -14,9 +10,10 @@
                 "UNICODE",
                 "_UNICODE"
             ],
-            "cStandard": "c11",
-            "cppStandard": "c++17",
-            "configurationProvider": "ms-vscode.makefile-tools"
+            "compilerPath": "C:\\MinGW\\bin\\gcc.exe",
+            "cStandard": "gnu17",
+            "cppStandard": "gnu++14",
+            "intelliSenseMode": "windows-gcc-x86"
         }
     ],
     "version": 4
