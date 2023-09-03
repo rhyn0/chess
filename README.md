@@ -9,6 +9,10 @@ This is a restart using Rust. Rust is amazing for its massive typing system and 
 
 This project will be using [Bevy](https://bevyengine.org/) as the GUI framework.
 
+### Attributions
+
+- Chess piece Models are from [SketchFab](https://sketchfab.com/3d-models/chess-kit-94f58cabfc0044acb83c28f5b70c79f9).
+
 ## Desirable Features
 
 - [ ] have an secondary board layout (circle seems fun)

@@ -7,6 +7,12 @@ edition = "2021"
 
 [dependencies]
 bevy = { version = "0.11.2", features = ["dynamic_linking"] }
+bevy_mod_picking = "0.15.0"
+itertool = "0.1.0"
+itertools = "0.11.0"
+strum = { version = "0.25.0", features = ["derive"] }
+strum_macros = "0.25.2"
+uuid = { version = "1.4.1", features = ["v6"] }
 
 ## Requested by Bevy Docs
 # Enable a small amount of optimization in debug mode
