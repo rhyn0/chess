@@ -1,8 +1,8 @@
 #![allow(dead_code)]
+/// Module to represent an engine optimized board object and its helper functions
+use super::piece::{Color, Type};
 use flagset::{flags, FlagSet};
 use std::str::FromStr;
-/// Module to represent an engine optimized board object and its helper functions
-use strum_macros::EnumString;
 
 /// Given the broken up rank, file
 /// # Arguments
@@ -41,52 +41,11 @@ flags! {
     }
 }
 
-#[derive(Eq, PartialEq, Debug, Clone, EnumString)]
-pub enum Color {
-    #[strum(serialize = "w")]
-    White,
-    #[strum(serialize = "b")]
-    Black,
-}
-
-impl Color {
-    /// # Panics
-    ///
-    /// Panic occurs when the input character is not a valid chess piece identifier
-    pub fn get_color_from_fen(piece_fen: char) -> Self {
-        assert!(
-            piece_fen.is_ascii_alphabetic() && PieceType::from_str(&piece_fen.to_string()).is_ok(),
-            "Invalid piece type"
-        );
-        if piece_fen.is_uppercase() {
-            return Self::White;
-        }
-        Self::Black
-    }
-}
-
-#[derive(Eq, PartialEq, Debug, Clone, EnumString)]
-pub enum PieceType {
-    // match char case-insensitive to get the piece type
-    #[strum(serialize = "k", ascii_case_insensitive)]
-    King,
-    #[strum(serialize = "q", ascii_case_insensitive)]
-    Queen,
-    #[strum(serialize = "b", ascii_case_insensitive)]
-    Bishop,
-    #[strum(serialize = "n", ascii_case_insensitive)]
-    Knight,
-    #[strum(serialize = "r", ascii_case_insensitive)]
-    Rook,
-    #[strum(serialize = "p", ascii_case_insensitive)]
-    Pawn,
-}
-
 #[derive(Debug, Clone, Eq, PartialEq)]
 pub struct PerformantRepr {
     /// This is meant to be performant, so we will use 64bit numbers
     /// Chess board is 8x8 so we will have bit 0 (LSB) represent a1
-    /// The next bit would be a2, so on through the ranks
+    /// The next bit would be b1, so on through the files and then the ranks
     /// Each number represents a piece type
     w_king: u64,
     w_queen: u64,
@@ -168,43 +127,43 @@ impl PerformantRepr {
                 // enumerate is 0 indexed, but ranks are 1 indexed
                 // FEN is also notated from the 8th rank to the 1st rank
                 let mask = select_rank_file((8 - rank).try_into().unwrap(), file);
-                match PieceType::from_str(&piece.to_string()) {
-                    Ok(PieceType::King) => {
+                match Type::from_str(&piece.to_string()) {
+                    Ok(Type::King) => {
                         if Color::get_color_from_fen(piece) == Color::White {
                             self.w_king |= mask;
                         } else {
                             self.b_king |= mask;
                         }
                     }
-                    Ok(PieceType::Queen) => {
+                    Ok(Type::Queen) => {
                         if Color::get_color_from_fen(piece) == Color::White {
                             self.w_queen |= mask;
                         } else {
                             self.b_queen |= mask;
                         }
                     }
-                    Ok(PieceType::Bishop) => {
+                    Ok(Type::Bishop) => {
                         if Color::get_color_from_fen(piece) == Color::White {
                             self.w_bishop |= mask;
                         } else {
                             self.b_bishop |= mask;
                         }
                     }
-                    Ok(PieceType::Knight) => {
+                    Ok(Type::Knight) => {
                         if Color::get_color_from_fen(piece) == Color::White {
                             self.w_knight |= mask;
                         } else {
                             self.b_knight |= mask;
                         }
                     }
-                    Ok(PieceType::Rook) => {
+                    Ok(Type::Rook) => {
                         if Color::get_color_from_fen(piece) == Color::White {
                             self.w_rook |= mask;
                         } else {
                             self.b_rook |= mask;
                         }
                     }
-                    Ok(PieceType::Pawn) => {
+                    Ok(Type::Pawn) => {
                         if Color::get_color_from_fen(piece) == Color::White {
                             self.w_pawn |= mask;
                         } else {
@@ -284,6 +243,19 @@ impl PerformantRepr {
         board.half_moves_count = fen_split[4].parse::<u32>().unwrap();
         board.moves_count = fen_split[5].parse::<usize>().unwrap();
         board
+    }
+    #[allow(unused_variables, clippy::unused_self)]
+    pub fn valid_move(&self, piece: &Type, moving: &Color, from: u64, to: u64) -> bool {
+        // first check that the piece can make that type of move
+        // knights can't move diagonally etc
+        if !piece.valid_move(from, to) {
+            return false;
+        }
+        // TODO: implement iter for Board, so that we can iterate over the positions of pieces
+        // any(piece_set & to) != 0 then we can't move there (depending on piece color)
+        // then check that the piece can make that move given board state
+        // piece can't occupy a square with a friendly piece
+        false
     }
 }
 
